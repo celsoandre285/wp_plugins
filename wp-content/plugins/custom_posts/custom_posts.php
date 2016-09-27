@@ -65,7 +65,7 @@ function my_updated_messages($messages){
     return $messages;
 }
 
-/**/
+/*Trabalhando com Contextual help*/
 add_action('contextual_help','my_contextual_help', 10, 3 );
 
 function my_contextual_help($contextual_help, $screen_id, $screen){
@@ -78,4 +78,45 @@ function my_contextual_help($contextual_help, $screen_id, $screen){
     }
     
     return $contextual_help;
+}
+
+/*Adicionando Boxes aos posts*/
+add_action('add_meta_boxes','produto_preco_box');
+function produto_preco_box(){
+    add_meta_box(
+        'produto_preco_box',          /*id*/
+        'Preço do Produto',           /*Titulo*/
+        'produto_preco_box_content',  /*A Função*/
+        'produto',                    /*tipo do post*/
+        'side',                       /*Posição*/
+        'low'                         /*Prioridade*/
+    );
+}
+
+function produto_preco_box_content( $post ){
+    /*Retornando o valor do Banco*/
+    $preco =  get_post_meta(get_the_ID(), 'produto_valor', true);
+    ?>
+    
+        <label for="produto_preco"></label>
+        
+        <input type="text" id="produto_preco" name="producto_preco" placeholder="insira o valor!" value="<?php echo $preco; ?>"/>
+        
+    <?php
+}
+
+
+add_action('save_post','produto_preco_box_save');
+
+function produto_preco_box_save( $post_id ){
+    /*Parando o Autosave*/
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
+        return;
+    /*Verificando o post e permissão do usuario*/
+    if('produto' != get_post_type() || !current_user_can('edit_post', $post_id) )
+        return;
+    /*Recuperando valor digitado*/
+    $produto_valor = $_POST['producto_preco'];
+    /*salvando no banco!*/
+    update_post_meta($post_id, 'produto_valor', $produto_valor  );
 }
