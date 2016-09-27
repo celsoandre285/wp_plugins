@@ -14,3 +14,8 @@ define ('PONE_DIR',plugin_dir_path( __FILE__ ) );
 
 /*adicionando o caminho para outros arquivos */
 require_once(PONE_DIR.'admin.php');
+
+/*Sobre as Actions*/
+/*
+    add_action('action_name', 'function', 'prioridade');
+*/
